@@ -1,5 +1,5 @@
 <div ng-init="initialize()" class="donor-main" layout="column">
-    
+
     <div flex="100" layout="column" layout-align="center center">
 
         <div layout="row" layout-xs="column" layout-align="center center">
@@ -8,39 +8,47 @@
                     <div class="md-toolbar-tools">
                         <h2>Registrarse como Donante</h2>
                         <span flex></span>
-                   
+
                     </div>
                 </md-toolbar>
                 <md-content class="md-padding">
                     <form name="userForm">
 
                         <div layout-gt-xs="colum">
-                            <md-input-container class="md-block" flex-gt-xs>
-                                <label>Name</label>
-                                <input ng-model="donor.name" placeholder="Homero">
-                            </md-input-container>
-                            <md-input-container class="md-block" flex-gt-xs>
-                                <label>Last Name</label>
-                                <input ng-model="donor.lastName" placeholder="Simpson">
-                            </md-input-container>
-                            <md-input-container class="md-block" flex-gt-xs>
-                                <label>Address</label>
-                                <input id="autocomplete" placeholder="Alajuela">
-                            </md-input-container>
+                            <div layout-gt-xs="row">
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Nombre</label>
+                                    <input ng-model="donor.name" placeholder="Homero">
+                                </md-input-container>
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Apellido</label>
+                                    <input ng-model="donor.lastName" placeholder="Simpson">
+                                </md-input-container>
+                            </div>
+                            <div layout-gt-xs="row">
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Direccion</label>
+                                    <input id="autocomplete" placeholder="Alajuela">
+                                </md-input-container>
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Teléfono</label>
+                                    <input ng-model="donor.phone" placeholder="+50633990044">
+                                </md-input-container>
+                            </div>
                         </div>
                         <div layout-gt-xs="row">
                             <md-input-container class="md-block" flex-gt-xs>
-                                <label>Age</label>
+                                <label>Edad</label>
                                 <input ng-model="donor.age" placeholder="24">
                             </md-input-container>
                             <md-input-container class="md-block" flex-gt-xs>
-                                <label>Weight</label>
+                                <label>Peso</label>
                                 <input ng-model="donor.weight" placeholder="80 kg">
                             </md-input-container>
                         </div>
                         <div layout-gt-xs="row">
                             <md-input-container class="md-block" flex-gt-sm>
-                                <label>Gender</label>
+                                <label>Género</label>
                                 <md-select ng-model="donor.gender">
                                     <md-option ng-repeat="item in genders">
                                         {{item}}
@@ -48,18 +56,24 @@
                                 </md-select>
                             </md-input-container>
                             <md-input-container class="md-block" flex-gt-sm>
-                                <label>Blood Type</label>
+                                <label>Tipo de Sangre</label>
                                 <md-select ng-model="donor.bloodtype">
                                     <md-option ng-repeat="item in bloodTypes">
                                         {{item}}
                                     </md-option>
                                 </md-select>
                             </md-input-container>
+                            <md-input-container class="md-block" flex-gt-sm>
+                                <md-checkbox ng-model="data.allowEmail" aria-label="Recibir correos">
+                                    Recibir Correos
+                                </md-checkbox>
+                            </md-input-container>
                         </div>
                     </form>
                 </md-content>
                 <div class="md-actions" layout="row"> <span flex></span>
-                    <md-button class="md-warn" ui-sref="donor-main" >Volver</md-button>
+
+                    <md-button class="md-warn" ui-sref="donor-main">Volver</md-button>
                     <md-button ng-click="addDonor(donor)" class="md-accent">Guardar</md-button>
                 </div>
             </div>
