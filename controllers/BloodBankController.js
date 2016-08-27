@@ -1,6 +1,33 @@
 var BloodBankModel = require('../models/BloodBankModel.js');
 var donorModel = require('../models/donorModel.js');
 
+var nodemailer = require('nodemailer');
+
+
+var mailer2 = { sendMail : function(donor) {
+    console.log("mailer.sendMail ...");
+    // create reusable transporter object using the default SMTP transport
+    var transporter = nodemailer.createTransport('smtps://excalibur506x%40gmail.com:LunaLuna.005@smtp.gmail.com');
+
+    // setup e-mail data with unicode symbols
+    var mailOptions = {
+        from: '"Martin Jimenez 👥" <excalibur506x@gmail.com>', // sender address
+        to: 'excalibur506@gmail.com', // list of receivers
+        subject: 'Hello ✔', // Subject line
+        text: 'Hello world 🐴', // plaintext body
+        html: '<b>Hello world 🐴</b>' // html body
+    };
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, function(error, info){
+        if(error){
+            return console.log(error);
+        }
+        console.log('Message sent: ' + info.response);
+    });    
+} };
+
+
 /**
  * BloodBankController.js
  *
@@ -148,6 +175,7 @@ module.exports = function() {
                         }
                     }
                 };
+                console.log("filter: ", filter.location.$nearSphere.$geometry)
                 BloodBankModel.find(filter, function (err, bloodBank) {
                     if (err) {
                         return res.status(500).json({
@@ -155,6 +183,7 @@ module.exports = function() {
                             error: err
                         });
                     }
+                    mailer2.sendMail();
                     return res.json(bloodBank);
                 });
             });
