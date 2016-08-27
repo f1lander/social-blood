@@ -8,6 +8,10 @@ app.factory('DonorService', function($http){
             },
             addBank:function (bank) {
                  return $http.post('/api/banks', {bank:bank});   
+            },
+             login:function (credentials) {
+                 return $http.post('/api/banks/login', {user:credentials.user,password:credentials.pass});   
             }
+
         };
     })

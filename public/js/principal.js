@@ -408,7 +408,18 @@ app.controller('BankController', function ($scope, $state, DonorService, $mdToas
     $scope.regis = !$scope.regis;
   }
   $scope.login = function () {
-    $state.go('principal');
+    var credentials = {
+      user:$scope.bank.user,
+      pass:$scope.bank.pass
+    };
+
+    DonorService.login(credentials).then(function (data) {
+      $scope.showSimpleToast('Ha iniciado sesion ' + data.data.user);
+      $state.go('principal');
+    }, function (err) {
+      console.log(err);
+      $scope.showSimpleToast('Ocurrio un error al tratar de iniciar sesión');
+    });
   };
 
   $scope.register = function () {
@@ -423,8 +434,8 @@ app.controller('BankController', function ($scope, $state, DonorService, $mdToas
       bank.location = { coordinates: [parseFloat(placeBank.lng), parseFloat(placeBank.lat)] };
       bank.address = placeBank.address;
       DonorService.addBank(bank).then(function (data) {
-         $scope.showSimpleToast('Se ha registrado como un banco de sangre');
-          $scope.regis = !$scope.regis;
+        $scope.showSimpleToast('Se ha registrado como un banco de sangre');
+        $scope.regis = !$scope.regis;
       }, function (err) {
         console.log(err);
         $scope.showSimpleToast('Ocurrio un error');
