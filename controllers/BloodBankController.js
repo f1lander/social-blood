@@ -4,49 +4,93 @@ var donorModel = require('../models/donorModel.js');
 var nodemailer = require('nodemailer');
 
 
-var mailer2 = { sendMail : function(donor, bank) {
-    console.log("mailer.sendMail ...");
-    // create reusable transporter object using the default SMTP transport
-    var transporter = nodemailer.createTransport('smtps://excalibur506x%40gmail.com:LunaLuna.005@smtp.gmail.com');
 
-    var message = `
-    <body>
-        <p>
-        Dear $name
+var mailer2 = { 
+    sendMailBank : function(donor, bank) {
+        // create reusable transporter object using the default SMTP transport
+        var transporter = nodemailer.createTransport('smtps://excalibur506x%40gmail.com:LunaLuna.005@smtp.gmail.com');
 
-        We have an request for blood type <b>$type</b>
+        var message = `
+        <body>
+            <p>
+            Señores $name
 
-        If you currently have the required gratefully reply this email 
+            Se requiere el siguuiente sangre del tipo <b>$type</b>
 
-        Looking forward to hear from you
+            Si ustedes cuentan en inventario con este tipo, le agradeceriamos nos pueda reenviar este correo indicandonoslo. 
 
-        The Social Blood Team
-        </p>
-    </body>
-    </html>
-    `;
+            Quedamos a la espera de su respuesta
 
-    message = message.replace("$name", bank.name);
-    message = message.replace("$type", donor.bloodtype ? donor.blootype : "--");
+            Equipo de Sangre Social
+            </p>
+        </body>
+        </html>
+        `;
 
-    console.log(message);
-    // setup e-mail data with unicode symbols
-    var mailOptions = {
-        from: '"Social Blood" <excalibur506x@gmail.com>', // sender address
-        to: bank.email, // list of receivers
-        subject: 'Blood request', // Subject line
-        text: 'Blood type request', // plaintext body
-        html: message // html body
-    };
+        message = message.replace("$name", bank.name);
+        message = message.replace("$type", donor.bloodtype ? donor.blootype : "--");
 
-    // send mail with defined transport object
-    transporter.sendMail(mailOptions, function(error, info){
-        if(error){
-            return console.log(error);
-        }
-        console.log('Message sent: ' + info.response);
-    });    
-} };
+        // setup e-mail data with unicode symbols
+        var mailOptions = {
+            from: '"Social Blood" <excalibur506x@gmail.com>', // sender address
+            to: bank.email, // list of receivers
+            subject: 'Blood request', // Subject line
+            text: 'Blood type request', // plaintext body
+            html: message // html body
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                return console.log(error);
+            }
+            console.log('Message sent: ' + info.response);
+        });    
+    },
+    sendMailDonor : function(donor, banks) {
+        // create reusable transporter object using the default SMTP transport
+        var transporter = nodemailer.createTransport('smtps://excalibur506x%40gmail.com:LunaLuna.005@smtp.gmail.com');
+
+        var message = `
+        <body>
+            <p>
+            Señor $name
+
+            Hemos contactado via correo electrònico a <b>$banks</b> bancos de sangre, para su solicitud
+
+            Confiamos contactarlo pronto con una respuesta positiva a su solicitud.
+
+            Equipo de Sangre Social
+            </p>
+        </body>
+        </html>
+        `;
+
+        console.log("donor: ", donor);
+        message = message.replace("$name", donor.name + " " + donor.lastname);
+        message = message.replace("$banks", banks.length + "");
+
+        console.log(message);
+        // setup e-mail data with unicode symbols
+        var mailOptions = {
+            from: '"Social Blood" <excalibur506x@gmail.com>', // sender address
+            to: donor.email, // list of receivers
+            subject: 'Blood request', // Subject line
+            text: 'Blood type request', // plaintext body
+            html: message // html body
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                return console.log(error);
+            }
+            console.log('Message sent: ' + info.response);
+        });    
+    }
+};
+
+
 
 
 /**
@@ -206,8 +250,9 @@ module.exports = function() {
                     }
 
                     for (index in banks) {
-                        mailer2.sendMail(donor, banks[index]);
+                        mailer2.sendMailBank(donor, banks[index]);
                     }
+                    mailer2.sendMailDonor(donor, banks);
                     return res.json(banks);
                 });
             });
