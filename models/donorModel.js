@@ -12,4 +12,5 @@ var donorSchema = new Schema({
 	weight:{type:Number}
 });
 
+// mongodb://<dbuser>:<dbpassword>@ds039155.mlab.com:39155/social-blood-db
 module.exports = mongoose.model('donor', donorSchema);
