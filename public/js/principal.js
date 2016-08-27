@@ -61,7 +61,6 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
     }
   });
 
-  $scope.initialize();
 
   var bounds = new google.maps.LatLngBounds();
   var interval;
@@ -232,8 +231,8 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
 
 app.controller('DonorController', function ($scope, $mdDialog, $mdToast, DonorService) {
 
-$scope.genders = ['F', 'M'];
-    $scope.bloodTypes = ['O-', 'O+', 'A+', 'A-', 'B-', 'B+', 'AB-', 'AB+'];
+  $scope.genders = ['F', 'M'];
+  $scope.bloodTypes = ['O-', 'O+', 'A+', 'A-', 'B-', 'B+', 'AB-', 'AB+'];
 
   //show dialog for add donor ---------------------------------------------
   $scope.showAdd = function (ev) {
@@ -250,7 +249,7 @@ $scope.genders = ['F', 'M'];
   //show dialog for add donor ---------------------------------------------
 
   //Toaster ---------------------------------------------
-    var last = {
+  var last = {
     bottom: false,
     top: true,
     left: false,
@@ -283,28 +282,28 @@ $scope.genders = ['F', 'M'];
   };
   //----------------------------------
 
-var setPlace = function (place) {
-      localStorage.removeItem('place');
-      localStorage.setItem('place', JSON.stringify({ address: place.formatted_address, lat: place.geometry.location.lat(), lng: place.geometry.location.lng() }));
-    };
+  var setPlace = function (place) {
+    localStorage.removeItem('place');
+    localStorage.setItem('place', JSON.stringify({ address: place.formatted_address, lat: place.geometry.location.lat(), lng: place.geometry.location.lng() }));
+  };
 
-    $scope.initialize = function () {
+  $scope.initialize = function () {
 
-      // Create the autocomplete object, restricting the search
-      // to geographical location types.
-      $scope.autocomplete = new google.maps.places.Autocomplete(
+    // Create the autocomplete object, restricting the search
+    // to geographical location types.
+    $scope.autocomplete = new google.maps.places.Autocomplete(
     /** @type {HTMLInputElement} */(document.getElementById('autocomplete')), {
-          types: ['geocode']
-        });
-      // When the user selects an address from the dropdown,
-      // populate the address fields in the form.
-      google.maps.event.addListener($scope.autocomplete, 'place_changed', function () {
-        var _place = $scope.autocomplete.getPlace();
-        //  angular.extend($scope.place,place);
-        setPlace(_place);
-
+        types: ['geocode']
       });
-    };
+    // When the user selects an address from the dropdown,
+    // populate the address fields in the form.
+    google.maps.event.addListener($scope.autocomplete, 'place_changed', function () {
+      var _place = $scope.autocomplete.getPlace();
+      //  angular.extend($scope.place,place);
+      setPlace(_place);
+
+    });
+  };
 
   //DialogController ---------------------------------------------
   function DialogController($scope, $mdDialog) {
@@ -327,7 +326,7 @@ var setPlace = function (place) {
     var place = JSON.parse(localStorage.getItem('place'));
 
     if (place) {
-      donor.location = {coordinates:[parseFloat(place.lng), parseFloat(place.lat)]};
+      donor.location = { coordinates: [parseFloat(place.lng), parseFloat(place.lat)] };
       donor.address = place.address;
       DonorService.addDonor(donor).then(function (data) {
         if (data.data) {
@@ -343,3 +342,60 @@ var setPlace = function (place) {
   //Adding a new donor function ---------------------------------------------
 
 });
+
+app.controller('BankController', function ($scope, $state, DonorService) {
+  var setPlaceBank = function (place) {
+    localStorage.removeItem('placeBank');
+    localStorage.setItem('placeBank', JSON.stringify({ address: place.formatted_address, lat: place.geometry.location.lat(), lng: place.geometry.location.lng() }));
+  };
+
+  $scope.initialize = function () {
+
+    // Create the autocomplete object, restricting the search
+    // to geographical location types.
+    $scope.autocomplete = new google.maps.places.Autocomplete(
+    /** @type {HTMLInputElement} */(document.getElementById('autocompleteBank')), {
+        types: ['geocode']
+      });
+    // When the user selects an address from the dropdown,
+    // populate the address fields in the form.
+    google.maps.event.addListener($scope.autocomplete, 'place_changed', function () {
+      var _place = $scope.autocomplete.getPlace();
+      //  angular.extend($scope.place,place);
+      setPlaceBank(_place);
+
+    });
+  };
+  var placeBank = JSON.parse(localStorage.getItem('placeBank'));
+
+  $scope.regis = true;
+
+  $scope.showRegis = function () {
+    $scope.regis = !$scope.regis;
+  }
+  $scope.login = function () {
+    $state.go('principal');
+  };
+
+  $scope.register = function () {
+    var bank = {
+      name: $scope.bank.name,
+      phone: $scope.bank.phone,
+      email: $scope.bank.email,
+      user: $scope.bank.user,
+      password: $scope.bank.password
+    };
+    if (placeBank) {
+      bank.location = { coordinates: [parseFloat(placeBank.lng), parseFloat(placeBank.lat)] };
+      bank.address = placeBank.address;
+      DonorService.addBank(bank).then(function (data) {
+         $scope.showSimpleToast('Se ha registrado como un banco de sangre');
+          $scope.regis = !$scope.regis;
+      }, function (err) {
+        $scope.showSimpleToast('Ocurrio un error');
+      });
+    } else {
+      $scope.showSimpleToast('Seleccione una ubicacion, aproximada');
+    }
+  }
+})

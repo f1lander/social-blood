@@ -5,6 +5,9 @@ app.factory('DonorService', function($http){
             },
             addDonor:function (donor) {
                  return $http.post('/api/donors', {donor:donor});   
+            },
+            addBank:function (bank) {
+                 return $http.post('/api/banks', {bank:bank});   
             }
         };
     })

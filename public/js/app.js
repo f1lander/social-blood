@@ -104,7 +104,8 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             controller: 'DonorController'
         }).state('bank-main', {
             url: '/bank-main',
-            templateUrl: 'views/bank-main.html'
+            templateUrl: 'views/bank-main.html',
+            controller:'BankController'
         })
 
 

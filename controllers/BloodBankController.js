@@ -96,14 +96,7 @@ module.exports = function() {
          * BloodBankController.create()
          */
         create: function (req, res) {
-            var BloodBank = new BloodBankModel({
-                name: req.body.name,
-                location : { coordinates : req.body.location },
-                contact: req.body.contact,
-                phone: req.body.phone,
-                address: req.body.address,
-                email: req.body.email
-            });
+            var BloodBank = new BloodBankModel(req.body.bank);
 
             BloodBank.save(function (err, BloodBank) {
                 if (err) {
