@@ -140,6 +140,34 @@ module.exports = function() {
         },
 
         /**
+         * BloodBankController.show()
+         */
+        login: function (req, res) {
+            var user = req.body.user;
+            var password = req.body.password;
+            BloodBankModel.findOne({ user: user }, function (err, BloodBank) {
+                if (err) {
+                    return res.status(500).json({
+                        message: 'Error when getting BloodBank.',
+                        error: err
+                    });
+                }
+                if (!BloodBank) {
+                    return res.status(404).json({
+                        message: 'Usuario/Clave Incorrectos'
+                    });
+                }
+                if (BloodBank.password === password) {                    
+                    return res.json(BloodBank);
+                } else {
+                    return res.status(404).json({
+                        message: 'Usuario/Clave Incorrectos'
+                    });
+                }
+            });
+        },
+
+        /**
          * BloodBankController.create()
          */
         create: function (req, res) {
@@ -149,17 +177,32 @@ module.exports = function() {
                 contact: req.body.contact,
                 phone: req.body.phone,
                 address: req.body.address,
-                email: req.body.email
+                email: req.body.email,
+                user: req.body.user,
+                password: req.body.password
             });
 
-            BloodBank.save(function (err, BloodBank) {
+            BloodBankModel.findOne({ user: user }, function (err, BloodBank) {
                 if (err) {
                     return res.status(500).json({
-                        message: 'Error when creating BloodBank',
+                        message: 'Error when getting BloodBank.',
                         error: err
                     });
                 }
-                return res.status(201).json(BloodBank);
+                if (BloodBank) {
+                    return res.status(404).json({
+                        message: 'User already exit'
+                    });
+                }
+                BloodBank.save(function (err, BloodBank) {
+                    if (err) {
+                        return res.status(500).json({
+                            message: 'Error when creating BloodBank',
+                            error: err
+                        });
+                    }
+                    return res.status(201).json(BloodBank);
+                });
             });
         },
 

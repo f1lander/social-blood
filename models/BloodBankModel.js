@@ -10,7 +10,9 @@ var BloodBankSchema = new Schema({
 	contact : String,
 	phone : String,
 	address : String,
-	email : String
+	email : String,
+	user: String,
+	password: String
 });
 
 BloodBankSchema.index({ location: '2dsphere' });
