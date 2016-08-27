@@ -14,7 +14,7 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
     localStorage.setItem('place', JSON.stringify({ address: place.formatted_address, lat: place.geometry.location.lat(), lng: place.geometry.location.lng() }));
 
   }
-  
+
   $scope.initialize = function () {
     // Create the autocomplete object, restricting the search
     // to geographical location types.
@@ -64,21 +64,21 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
     } else {
       $scope.map.markers = [];
 
-        for (var i = 0; i < $scope.donors.length; i++) {
-          var marker = new google.maps.Marker({
-            id: Date.now(),
-            coords: {
-              latitude: $scope.donors[i].location[0],
-              longitude: $scope.donors[i].location[1]
-            }
-          });
+      for (var i = 0; i < $scope.donors.length; i++) {
+        var marker = new google.maps.Marker({
+          id: Date.now(),
+          coords: {
+            latitude: $scope.donors[i].location[0],
+            longitude: $scope.donors[i].location[1]
+          }
+        });
 
-          $scope.map.markers.push(marker);
-          bounds.extend(new google.maps.LatLng(marker.coords.latitude, marker.coords.longitude));
-        }
+        $scope.map.markers.push(marker);
+        bounds.extend(new google.maps.LatLng(marker.coords.latitude, marker.coords.longitude));
+      }
 
-        $scope.map2.setCenter(bounds.getCenter());
-        $scope.map2.fitBounds(bounds);
+      $scope.map2.setCenter(bounds.getCenter());
+      $scope.map2.fitBounds(bounds);
 
     }
   });
@@ -136,25 +136,6 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
     });
   });
 
-  $scope.addDonor = function () {
-    var place = JSON.parse(localStorage.getItem('place'));
-
-    if (place) {
-      $scope.donor.location = [parseFloat(place.lat), parseFloat(place.lng)];
-      $scope.donor.address = place.address;
-      DonorService.addDonor($scope.donor).then(function (data) {
-        if (data.data) {
-          $scope.showSimpleToast('The donor was added');
-          $scope.getDonors();
-          
-        };
-      }, function (error) {
-        $scope.showSimpleToast('An error ocurred ' + error.data.error.message);
-      });
-    } else {
-      $scope.showSimpleToast('Please Select the address');
-    }
-  }
   $scope.getDonors = function () {
     $scope.donors = [];
     DonorService.getDonors().then(function (data) {
@@ -172,7 +153,7 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
             });
 
             $scope.map.markers.push(marker);
-           
+
             bounds.extend(new google.maps.LatLng(marker.coords.latitude, marker.coords.longitude));
           }
 
@@ -268,5 +249,74 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
         });
     }
   }
+
+});
+
+app.controller('DonorController', function ($scope, $mdDialog, $mdToast) {
+  $scope.genders = ['F', 'M'];
+  $scope.bloodTypes = ['O-', 'O+', 'A+', 'A-', 'B-', 'B+', 'AB-', 'AB+'];
+
+  //show dialog for add donor ---------------------------------------------
+  $scope.showAdd = function (ev) {
+    $mdDialog.show({
+      controller: DialogController,
+      templateUrl: '/views/dialog-donor.html',
+      targetEvent: ev,
+    }).then(function (donor) {
+      $scope.addDonor(donor);
+    }, function () {
+
+    });
+  };
+  //show dialog for add donor ---------------------------------------------
+  
+  //Toaster ---------------------------------------------
+  $scope.showSimpleToast = function (msg) {
+    var pinTo = $scope.getToastPosition();
+    $mdToast.show(
+      $mdToast.simple()
+        .textContent(msg)
+        .position(pinTo)
+        .hideDelay(3000)
+    );
+  };
+  //----------------------------------
+
+  //DialogController ---------------------------------------------
+  function DialogController($scope, $mdDialog) {
+    $scope.donor = {};
+    $scope.hide = function () {
+      $mdDialog.hide();
+    };
+    $scope.cancel = function () {
+      $mdDialog.cancel();
+    };
+    $scope.answer = function (donor) {
+      $mdDialog.hide(donor);
+    };
+  };
+  //DialogController ---------------------------------------------
+
+  //Adding a new donor function ---------------------------------------------
+  $scope.addDonor = function (donor) {
+    var place = JSON.parse(localStorage.getItem('place'));
+
+    if (place) {
+      donor.location = [parseFloat(place.lat), parseFloat(place.lng)];
+      donor.address = place.address;
+      DonorService.addDonor(donor).then(function (data) {
+        if (data.data) {
+          $scope.showSimpleToast('The donor was added');
+          $scope.getDonors();
+
+        };
+      }, function (error) {
+        $scope.showSimpleToast('An error ocurred ' + error.data.error.message);
+      });
+    } else {
+      $scope.showSimpleToast('Seleccione una ubicacion, aproximada');
+    }
+  };
+  //Adding a new donor function ---------------------------------------------
 
 });

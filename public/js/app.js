@@ -73,9 +73,12 @@ app.config(function ($mdThemingProvider) {
        
 });
 app.config(function ($stateProvider, $urlRouterProvider) {
+  $urlRouterProvider.when('/dashboard', '/dashboard/main');
 
-   $urlRouterProvider.when('/dashboard', '/dashboard/principal');
-   $urlRouterProvider.otherwise('/dashboard');
+    $urlRouterProvider.otherwise(function ($injector, $location) {
+      var $state = $injector.get("$state");
+      $state.go('main');
+    });
 
     $stateProvider
      
@@ -89,6 +92,15 @@ app.config(function ($stateProvider, $urlRouterProvider) {
           templateUrl: 'views/principal.html',
           controller:"PrincipalCtrl"
           
+        }).state('main', {
+          url: '/main',
+          templateUrl: 'views/main.html'          
+        }).state('donor-main', {
+          url: '/donor-main',
+          templateUrl: 'views/donor-main.html'          
+        }).state('bank-main', {
+          url: '/bank-main',
+          templateUrl: 'views/bank-main.html'          
         })
 
 
