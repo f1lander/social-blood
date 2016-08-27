@@ -5,7 +5,7 @@ var donorSchema = new Schema({
 	name : {type: String},
 	lastname : {type: String},
 	address:{type:String},
-	location : { type:[Number], index: '2d', required: true, unique:false},
+	location: { type: { type: String, enum: "Point", default: "Point" }, coordinates: { type: [Number], default: [0, 0] } },
 	bloodtype : {type: String},
 	gender:{type:String},
 	age:{type:Number},
@@ -13,4 +13,7 @@ var donorSchema = new Schema({
 });
 
 // mongodb://<dbuser>:<dbpassword>@ds039155.mlab.com:39155/social-blood-db
+
+donorSchema.index({ location: '2dsphere' });
+
 module.exports = mongoose.model('donor', donorSchema);
