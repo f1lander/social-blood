@@ -9,28 +9,6 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
   $scope.genderMale = '/img/man.png';
   $scope.copyMarkers = [];
 
-  var setPlace = function (place) {
-    localStorage.removeItem('place');
-    localStorage.setItem('place', JSON.stringify({ address: place.formatted_address, lat: place.geometry.location.lat(), lng: place.geometry.location.lng() }));
-
-  }
-
-  $scope.initialize = function () {
-    // Create the autocomplete object, restricting the search
-    // to geographical location types.
-    $scope.autocomplete = new google.maps.places.Autocomplete(
-    /** @type {HTMLInputElement} */(document.getElementById('autocomplete')), {
-        types: ['geocode']
-      });
-    // When the user selects an address from the dropdown,
-    // populate the address fields in the form.
-    google.maps.event.addListener($scope.autocomplete, 'place_changed', function () {
-      var _place = $scope.autocomplete.getPlace();
-      //  angular.extend($scope.place,place);
-      setPlace(_place);
-
-    });
-  }
 
   $scope.$watch('search', function (searchfilter) {
     if (searchfilter) {
@@ -252,9 +230,10 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
 
 });
 
-app.controller('DonorController', function ($scope, $mdDialog, $mdToast) {
-  $scope.genders = ['F', 'M'];
-  $scope.bloodTypes = ['O-', 'O+', 'A+', 'A-', 'B-', 'B+', 'AB-', 'AB+'];
+app.controller('DonorController', function ($scope, $mdDialog, $mdToast, DonorService) {
+
+$scope.genders = ['F', 'M'];
+    $scope.bloodTypes = ['O-', 'O+', 'A+', 'A-', 'B-', 'B+', 'AB-', 'AB+'];
 
   //show dialog for add donor ---------------------------------------------
   $scope.showAdd = function (ev) {
@@ -269,8 +248,30 @@ app.controller('DonorController', function ($scope, $mdDialog, $mdToast) {
     });
   };
   //show dialog for add donor ---------------------------------------------
-  
+
   //Toaster ---------------------------------------------
+    var last = {
+    bottom: false,
+    top: true,
+    left: false,
+    right: true
+  };
+  $scope.toastPosition = angular.extend({}, last);
+  $scope.getToastPosition = function () {
+    sanitizePosition();
+    return Object.keys($scope.toastPosition)
+      .filter(function (pos) { return $scope.toastPosition[pos]; })
+      .join(' ');
+  };
+  function sanitizePosition() {
+    var current = $scope.toastPosition;
+    if (current.bottom && last.top) current.top = false;
+    if (current.top && last.bottom) current.bottom = false;
+    if (current.right && last.left) current.left = false;
+    if (current.left && last.right) current.right = false;
+    last = angular.extend({}, current);
+  }
+
   $scope.showSimpleToast = function (msg) {
     var pinTo = $scope.getToastPosition();
     $mdToast.show(
@@ -282,8 +283,32 @@ app.controller('DonorController', function ($scope, $mdDialog, $mdToast) {
   };
   //----------------------------------
 
+var setPlace = function (place) {
+      localStorage.removeItem('place');
+      localStorage.setItem('place', JSON.stringify({ address: place.formatted_address, lat: place.geometry.location.lat(), lng: place.geometry.location.lng() }));
+    };
+
+    $scope.initialize = function () {
+
+      // Create the autocomplete object, restricting the search
+      // to geographical location types.
+      $scope.autocomplete = new google.maps.places.Autocomplete(
+    /** @type {HTMLInputElement} */(document.getElementById('autocomplete')), {
+          types: ['geocode']
+        });
+      // When the user selects an address from the dropdown,
+      // populate the address fields in the form.
+      google.maps.event.addListener($scope.autocomplete, 'place_changed', function () {
+        var _place = $scope.autocomplete.getPlace();
+        //  angular.extend($scope.place,place);
+        setPlace(_place);
+
+      });
+    };
+
   //DialogController ---------------------------------------------
   function DialogController($scope, $mdDialog) {
+
     $scope.donor = {};
     $scope.hide = function () {
       $mdDialog.hide();
@@ -302,13 +327,11 @@ app.controller('DonorController', function ($scope, $mdDialog, $mdToast) {
     var place = JSON.parse(localStorage.getItem('place'));
 
     if (place) {
-      donor.location = [parseFloat(place.lat), parseFloat(place.lng)];
+      donor.location = {coordinates:[parseFloat(place.lng), parseFloat(place.lat)]};
       donor.address = place.address;
       DonorService.addDonor(donor).then(function (data) {
         if (data.data) {
-          $scope.showSimpleToast('The donor was added');
-          $scope.getDonors();
-
+          $scope.showSimpleToast('Te has registrado como donante');
         };
       }, function (error) {
         $scope.showSimpleToast('An error ocurred ' + error.data.error.message);

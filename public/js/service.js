@@ -6,6 +6,5 @@ app.factory('DonorService', function($http){
             addDonor:function (donor) {
                  return $http.post('/api/donors', {donor:donor});   
             }
-            
         };
     })
