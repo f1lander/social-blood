@@ -11,6 +11,7 @@ var donorSchema = new Schema({
 	gender:{type:String},
 	age:{type:Number},
 	weight:{type:Number},
+	email:{type:String},
 	allowEmail:{type:Boolean}
 });
 

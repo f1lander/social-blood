@@ -32,4 +32,9 @@ router.delete('/:id', BloodBankController.remove);
  */
 router.post('/requestBlood', BloodBankController.requestBlood);
 
+/*
+ * POST
+ */
+router.post('/login', BloodBankController.login);
+
 module.exports = router;
