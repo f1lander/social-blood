@@ -1,40 +1,35 @@
 var express = require('express');
 var router = express.Router();
-var BloodBankController = require('../controllers/BloodBankController.js');
+var BloodBankController = require('../controllers/BloodBankController.js')();
 
 /*
  * GET
  */
-router.get('/', function (req, res) {
-    BloodBankController.list(req, res);
-});
+router.get('/', BloodBankController.list);
 
 /*
  * GET
  */
-router.get('/:id', function (req, res) {
-    BloodBankController.show(req, res);
-});
+router.get('/:id', BloodBankController.show);
 
 /*
  * POST
  */
-router.post('/', function (req, res) {
-    BloodBankController.create(req, res);
-});
+router.post('/', BloodBankController.create);
 
 /*
  * PUT
  */
-router.put('/:id', function (req, res) {
-    BloodBankController.update(req, res);
-});
+router.put('/:id', BloodBankController.update);
 
 /*
  * DELETE
  */
-router.delete('/:id', function (req, res) {
-    BloodBankController.remove(req, res);
-});
+router.delete('/:id', BloodBankController.remove);
+
+/*
+ * POST
+ */
+router.post('/requestBlood', BloodBankController.requestBlood);
 
 module.exports = router;
