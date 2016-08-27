@@ -3,8 +3,6 @@ var donorModel = require('../models/donorModel.js');
 
 var nodemailer = require('nodemailer');
 
-var async = require("async");
-
 
 var mailer2 = { 
     sendMailBank : function(donor, bank) {
@@ -171,29 +169,29 @@ module.exports = function() {
          * BloodBankController.create()
          */
         create: function (req, res) {
-
+            console.log(req.body.bank);
             var BloodBank = new BloodBankModel(req.body.bank);
 
-            BloodBankModel.findOne({ user: user }, function (err, BloodBank) {
+            BloodBankModel.findOne({ user: BloodBank.user }, function (err, data) {
                 if (err) {
                     return res.status(500).json({
                         message: 'Error when getting BloodBank.',
                         error: err
                     });
                 }
-                if (BloodBank) {
+                if (data) {
                     return res.status(404).json({
                         message: 'User already exit'
                     });
                 }
-                BloodBank.save(function (err, BloodBank) {
+                BloodBank.save(function (err, _data) {
                     if (err) {
                         return res.status(500).json({
                             message: 'Error when creating BloodBank',
                             error: err
                         });
                     }
-                    return res.status(201).json(BloodBank);
+                    return res.status(201).json(_data);
                 });
             });
         },

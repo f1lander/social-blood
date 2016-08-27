@@ -343,7 +343,41 @@ app.controller('DonorController', function ($scope, $mdDialog, $mdToast, DonorSe
 
 });
 
-app.controller('BankController', function ($scope, $state, DonorService) {
+app.controller('BankController', function ($scope, $state, DonorService, $mdToast) {
+  //Toaster ---------------------------------------------
+  var last = {
+    bottom: false,
+    top: true,
+    left: false,
+    right: true
+  };
+  $scope.toastPosition = angular.extend({}, last);
+  $scope.getToastPosition = function () {
+    sanitizePosition();
+    return Object.keys($scope.toastPosition)
+      .filter(function (pos) { return $scope.toastPosition[pos]; })
+      .join(' ');
+  };
+  function sanitizePosition() {
+    var current = $scope.toastPosition;
+    if (current.bottom && last.top) current.top = false;
+    if (current.top && last.bottom) current.bottom = false;
+    if (current.right && last.left) current.left = false;
+    if (current.left && last.right) current.right = false;
+    last = angular.extend({}, current);
+  }
+
+  $scope.showSimpleToast = function (msg) {
+    var pinTo = $scope.getToastPosition();
+    $mdToast.show(
+      $mdToast.simple()
+        .textContent(msg)
+        .position(pinTo)
+        .hideDelay(3000)
+    );
+  };
+  //----------------------------------
+
   var setPlaceBank = function (place) {
     localStorage.removeItem('placeBank');
     localStorage.setItem('placeBank', JSON.stringify({ address: place.formatted_address, lat: place.geometry.location.lat(), lng: place.geometry.location.lng() }));
@@ -383,7 +417,7 @@ app.controller('BankController', function ($scope, $state, DonorService) {
       phone: $scope.bank.phone,
       email: $scope.bank.email,
       user: $scope.bank.user,
-      password: $scope.bank.password
+      password: $scope.bank.pass
     };
     if (placeBank) {
       bank.location = { coordinates: [parseFloat(placeBank.lng), parseFloat(placeBank.lat)] };
@@ -392,6 +426,7 @@ app.controller('BankController', function ($scope, $state, DonorService) {
          $scope.showSimpleToast('Se ha registrado como un banco de sangre');
           $scope.regis = !$scope.regis;
       }, function (err) {
+        console.log(err);
         $scope.showSimpleToast('Ocurrio un error');
       });
     } else {
