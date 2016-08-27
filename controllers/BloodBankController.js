@@ -6,8 +6,7 @@ var donorModel = require('../models/donorModel.js');
  *
  * @description :: Server-side logic for managing BloodBanks.
  */
-module.exports = {
-
+module.exports = function() {
     return {
         /**
          * BloodBankController.list()
@@ -51,7 +50,7 @@ module.exports = {
         create: function (req, res) {
             var BloodBank = new BloodBankModel({
                 name: req.body.name,
-                location: req.body.location,
+                location : { coordinates : req.body.location },
                 contact: req.body.contact,
                 phone: req.body.phone,
                 address: req.body.address,
@@ -128,11 +127,12 @@ module.exports = {
          */
         requestBlood: function (req, res) {
             var id = req.body.id;
-            var kmRange = req.body.kmLimit;
-            donorModel.findOne({ _id: id }, function (err, donor) {
+            var kmLimit = req.body.kmLimit;
+            console.log("kmLimit: ", kmLimit);
+            donorModel.findById( id , function (err, donor) {
                 if (err) {
                     return res.status(500).json({
-                        message: 'Error when deleting the BloodBank.',
+                        message: 'Not found.',
                         error: err
                     });
                 }
@@ -144,20 +144,20 @@ module.exports = {
                                 type: 'Point',
                                 coordinates: [donor.location.coordinates[0], donor.location.coordinates[1]]
                             },
-                            $maxDistance: kmRange
+                            $maxDistance: kmLimit
                         }
                     }
                 };
                 BloodBankModel.find(filter, function (err, bloodBank) {
                     if (err) {
                         return res.status(500).json({
-                            message: 'Error when deleting the BloodBank.',
+                            message: 'Error geo locating the blood bank.',
                             error: err
                         });
                     }
                     return res.json(bloodBank);
                 });
             });
-        },
+        }
     }
 };

@@ -49,18 +49,17 @@ module.exports = {
      * donorController.create()
      */
     create: function(req, res) {
-        /**
+       var donor = new donorModel({
 			name : req.body.name,
 			lastname : req.body.lastname,
-			location : req.body.location,
+			location : { coordinates : req.body.location },
 			bloodtype : req.body.bloodtype,
-            address =  req.body.address ? req.body.address : donor.address;
-            age =  req.body.age ? req.body.age : donor.age;
-            weight =  req.body.weight ? req.body.weight : donor.weight;
-            donor.gender =  req.body.gender ? req.body.gender : donor.gender;
-        } */
+            address :  req.body.address ? req.body.address : donor.address,
+            age : req.body.age ? req.body.age : donor.age,
+            weight : req.body.weight ? req.body.weight : donor.weight,
+            gender : req.body.gender ? req.body.gender : donor.gender,
+        });
         console.log(req.body.donor);
-        var donor = new donorModel(req.body.donor);
         
         //console.log(donor);
 
