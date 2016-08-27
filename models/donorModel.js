@@ -12,7 +12,8 @@ var donorSchema = new Schema({
 	age:{type:Number},
 	weight:{type:Number},
 	email:{type:String},
-	allowEmail:{type:Boolean}
+	allowEmail:{type:Boolean},
+	password: String
 });
 
 // mongodb://<dbuser>:<dbpassword>@ds039155.mlab.com:39155/social-blood-db
