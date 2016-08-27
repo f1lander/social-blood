@@ -3,6 +3,7 @@ var donorModel = require('../models/donorModel.js');
 
 var nodemailer = require('nodemailer');
 
+var async = require("async");
 
 
 var mailer2 = { 
@@ -13,15 +14,16 @@ var mailer2 = {
         var message = `
         <body>
             <p>
-            Señores $name
-
-            Se requiere el siguuiente sangre del tipo <b>$type</b>
-
-            Si ustedes cuentan en inventario con este tipo, le agradeceriamos nos pueda reenviar este correo indicandonoslo. 
-
-            Quedamos a la espera de su respuesta
-
-            Equipo de Sangre Social
+            Señores $name<br>
+<br>
+            Se requiere el siguuiente sangre del tipo <b>$type</b><br>
+<br>
+            Si ustedes cuentan en inventario con este tipo, <br>
+            le agradeceriamos nos pueda reenviar este correo indicandonoslo.<br> 
+<br>
+            Quedamos a la espera de su respuesta<br>
+<br>
+            Equipo de Sangre Social<br>
             </p>
         </body>
         </html>
@@ -30,6 +32,7 @@ var mailer2 = {
         message = message.replace("$name", bank.name);
         message = message.replace("$type", donor.bloodtype ? donor.blootype : "--");
 
+        console.log(message);
         // setup e-mail data with unicode symbols
         var mailOptions = {
             from: '"Social Blood" <excalibur506x@gmail.com>', // sender address
@@ -54,13 +57,13 @@ var mailer2 = {
         var message = `
         <body>
             <p>
-            Señor $name
+            Señor $name<br>
+<br>
+            Hemos contactado via correo electrònico a <b>$banks</b> bancos de sangre, para su solicitud<br>
 
-            Hemos contactado via correo electrònico a <b>$banks</b> bancos de sangre, para su solicitud
-
-            Confiamos contactarlo pronto con una respuesta positiva a su solicitud.
-
-            Equipo de Sangre Social
+            Confiamos contactarlo pronto con una respuesta positiva a su solicitud.<br>
+<br>
+            Equipo de Sangre Social<br>
             </p>
         </body>
         </html>
@@ -241,7 +244,7 @@ module.exports = function() {
                     }
                 };
 
-                var banks = BloodBankModel.find(filter, function (err, banks) {
+                BloodBankModel.find(filter, function (err, banks) {
                     if (err) {
                         return res.status(500).json({
                             message: 'Error geo locating the blood bank.',
@@ -249,11 +252,13 @@ module.exports = function() {
                         });
                     }
 
-                    for (index in banks) {
-                        mailer2.sendMailBank(donor, banks[index]);
+                    banks.forEach(function(index, bank) {
+                        mailer2.sendMailBank(donor, bank);
+                    });
+                    if (donor.allowEmail) {
+                        mailer2.sendMailDonor(donor, banks);
                     }
-                    mailer2.sendMailDonor(donor, banks);
-                    return res.json(banks);
+                    return res.status(200).send(true);                 
                 });
             });
         }
