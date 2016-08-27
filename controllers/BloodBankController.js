@@ -4,18 +4,39 @@ var donorModel = require('../models/donorModel.js');
 var nodemailer = require('nodemailer');
 
 
-var mailer2 = { sendMail : function(donor) {
+var mailer2 = { sendMail : function(donor, bank) {
     console.log("mailer.sendMail ...");
     // create reusable transporter object using the default SMTP transport
     var transporter = nodemailer.createTransport('smtps://excalibur506x%40gmail.com:LunaLuna.005@smtp.gmail.com');
 
+    var message = `
+    <body>
+        <p>
+        Dear $name
+
+        We have an request for blood type <b>$type</b>
+
+        If you currently have the required gratefully reply this email 
+
+        Looking forward to hear from you
+
+        The Social Blood Team
+        </p>
+    </body>
+    </html>
+    `;
+
+    message = message.replace("$name", bank.name);
+    message = message.replace("$type", donor.bloodtype ? donor.blootype : "--");
+
+    console.log(message);
     // setup e-mail data with unicode symbols
     var mailOptions = {
-        from: '"Martin Jimenez 👥" <excalibur506x@gmail.com>', // sender address
-        to: 'excalibur506@gmail.com', // list of receivers
-        subject: 'Hello ✔', // Subject line
-        text: 'Hello world 🐴', // plaintext body
-        html: '<b>Hello world 🐴</b>' // html body
+        from: '"Social Blood" <excalibur506x@gmail.com>', // sender address
+        to: bank.email, // list of receivers
+        subject: 'Blood request', // Subject line
+        text: 'Blood type request', // plaintext body
+        html: message // html body
     };
 
     // send mail with defined transport object
@@ -175,16 +196,19 @@ module.exports = function() {
                         }
                     }
                 };
-                console.log("filter: ", filter.location.$nearSphere.$geometry)
-                BloodBankModel.find(filter, function (err, bloodBank) {
+
+                var banks = BloodBankModel.find(filter, function (err, banks) {
                     if (err) {
                         return res.status(500).json({
                             message: 'Error geo locating the blood bank.',
                             error: err
                         });
                     }
-                    mailer2.sendMail();
-                    return res.json(bloodBank);
+
+                    for (index in banks) {
+                        mailer2.sendMail(donor, banks[index]);
+                    }
+                    return res.json(banks);
                 });
             });
         }
