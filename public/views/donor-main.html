@@ -17,7 +17,7 @@
                 <md-button ui-sref="donor-login" class="md-raised md-warn md-button-large">Iniciar Sesión</md-button>
             </div>
             <div>
-                <md-button ng-hide="!donorLogged" ui-sref="donor-login" class="md-raised md-warn md-button-large">Solicitar Pinta</md-button>
+                <md-button ng-show="donorLogged" ng-click="requestPinta()" class="md-raised md-warn md-button-large">Solicitar Pinta</md-button>
             </div>
         </div>
     </div>

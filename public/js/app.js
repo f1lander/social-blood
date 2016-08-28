@@ -4,8 +4,7 @@ var app = angular.module('donor', ['ui.router',
     'uiGmapgoogle-maps',
     'angular-loading-bar',
     'ngMaterial',
-    'ngMdIcons',
-    'ngAutocomplete']);
+    'ngMdIcons']);
 
 app.config(function ($mdThemingProvider) {
     var customPrimary = {
@@ -97,7 +96,8 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             templateUrl: 'views/main.html'
         }).state('donor-main', {
             url: '/donor-main',
-            templateUrl: 'views/donor-main.html'
+            templateUrl: 'views/donor-main.html',
+            controller: 'DonorController'
         }).state('donor-register', {
             url: '/donor-register',
             templateUrl: 'views/donor-register.html',

@@ -13,7 +13,7 @@ app.factory('DonorService', function($http){
                  return $http.post('/api/banks/login', {user:credentials.user,password:credentials.pass});   
             },
              loginDonor:function (credentials) {
-                 return $http.post('/api/donors/login', {user:credentials.user,password:credentials.pass});   
+                 return $http.post('/api/donors/login', {email:credentials.user,password:credentials.pass});   
             },            
              requestBlood:function (_id) {
                  return $http.post('/api/banks/requestBlood', {id:_id, kmLimit:50000});   
