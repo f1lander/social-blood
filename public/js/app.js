@@ -24,8 +24,8 @@ app.config(function ($mdThemingProvider) {
         'A700': '#a21309'
     };
     $mdThemingProvider
-        .definePalette('customPrimary', 
-                        customPrimary);
+        .definePalette('customPrimary',
+        customPrimary);
 
     var customAccent = {
         '50': '#6d5200',
@@ -44,8 +44,8 @@ app.config(function ($mdThemingProvider) {
         'A700': '#ffe186'
     };
     $mdThemingProvider
-        .definePalette('customAccent', 
-                        customAccent);
+        .definePalette('customAccent',
+        customAccent);
 
     var customWarn = {
         '50': '#ffb8a1',
@@ -64,31 +64,53 @@ app.config(function ($mdThemingProvider) {
         'A700': '#a12700'
     };
     $mdThemingProvider
-        .definePalette('customWarn', 
-                        customWarn);
-   $mdThemingProvider.theme('default')
-       .primaryPalette('customPrimary')
-       .accentPalette('customAccent')
-       .warnPalette('customWarn')
-       
+        .definePalette('customWarn',
+        customWarn);
+    $mdThemingProvider.theme('default')
+        .primaryPalette('customPrimary')
+        .accentPalette('customAccent')
+        .warnPalette('customWarn')
+
 });
 app.config(function ($stateProvider, $urlRouterProvider) {
+    $urlRouterProvider.when('/dashboard', '/dashboard/main');
 
-   $urlRouterProvider.when('/dashboard', '/dashboard/principal');
-   $urlRouterProvider.otherwise('/dashboard');
+    $urlRouterProvider.otherwise(function ($injector, $location) {
+        var $state = $injector.get("$state");
+        $state.go('main');
+    });
 
     $stateProvider
-     
+
         .state('dashboard', {
             url: '/dashboard',
             templateUrl: 'views/dashboard.html',
-             controller:"PrincipalCtrl"
+            controller: "PrincipalCtrl"
         }).state('principal', {
-          url: '/principal',
-          parent: 'dashboard',
-          templateUrl: 'views/principal.html',
-          controller:"PrincipalCtrl"
-          
+            url: '/principal',
+            parent: 'dashboard',
+            templateUrl: 'views/principal.html',
+            controller: "PrincipalCtrl"
+        }).state('main', {
+            url: '/main',
+            templateUrl: 'views/main.html'
+        }).state('donor-main', {
+            url: '/donor-main',
+            templateUrl: 'views/donor-main.html',
+            controller: 'DonorController'
+        }).state('donor-register', {
+            url: '/donor-register',
+            templateUrl: 'views/donor-register.html',
+            controller: 'DonorController'
+
+        }).state('donor-login', {
+            url: '/donor-login',
+            templateUrl: 'views/donor-login.html',
+            controller: 'DonorController'
+        }).state('bank-main', {
+            url: '/bank-main',
+            templateUrl: 'views/bank-main.html',
+            controller:'BankController'
         })
 
 
@@ -98,7 +120,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 
 
 app.controller('AppCtrl', function ($rootScope, $scope, $timeout, $mdSidenav, $log, $state) {
-  //$scope.language = localStorage.getItem('language');
+    //$scope.language = localStorage.getItem('language');
 
 
 });

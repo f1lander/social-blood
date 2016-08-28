@@ -1,23 +1,40 @@
-# donor-list
+# Social-Blood
 
-This a MEAN Stack example which use google maps api, you can see how to build and with simple Create and Read operations.
+Esta es una aplicacion de registro de donadores de sangre y control de Banco de sangre
+
+Utiliza MEAN (Mongo/Express/Angular/NodeJS), con Material Design and use google apis 
+
+
+Asegure de instalar los siguientes programas
+
++ git
++ NodeJS (ver https://nodejs.org/en/download/) para los diferentes OS
+
+
+Para instalar y correr debe desde una consola linux/OS X o Windows Prompts
+
 
 ```sh
 
-$ git clone https://github.com/f1lander/donor-list-challenge.git
-$ cd donor-list-challenge
+$ git clone https://github.com/f1lander/social-blood.git
+$ cd social-blood
 $ npm install
-$ bower install
 $ npm start
 
 ```
+
+Abre el browser y vaya a la siguiente dirección
+
+http://localhost:3000/
+
+
 
 License
 ---------
 
 MIT License
 
-Copyright (c) 2016 Edax Uclés
+Copyright (c) 2016 Code Roaster
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -1,0 +1,68 @@
+<div ng-init="initialize()" class="bank-main" layout="column">
+
+    <div flex="100" layout="column" layout-align="center center">
+
+        <div layout="row" layout-xs="column" layout-align="center center">
+            <div>
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <h2>{{regis ? 'Inicio de Sesíon' : 'Registrarse'}} como Banco de Sangre</h2>
+                        <span flex></span>
+                    </div>
+                </md-toolbar>
+                <md-content class="md-padding">
+                    <form name="userForm">
+                        <div layout-gt-xs="colum">
+                            <div layout-gt-xs="row">
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Usuario</label>
+                                    <input ng-model="bank.user">
+                                </md-input-container>
+
+                            </div>
+                            <div layout-gt-xs="row">
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Contraseña</label>
+                                    <input type="password" ng-model="bank.pass">
+                                </md-input-container>
+
+                            </div>
+                            <div ng-hide="regis" layout-gt-xs="row">
+
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Nombre</label>
+                                    <input ng-model="bank.name" type="text">
+                                </md-input-container>
+
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Telefono</label>
+                                    <input ng-model="bank.phone" type="text">
+                                </md-input-container>
+                            </div>
+                            <div ng-hide="regis" layout-gt-xs="row">
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Ubicacion</label>
+                                    <input placeholder="Alajuela" id="autocompleteBank">
+                                </md-input-container>
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Email</label>
+                                    <input ng-model="bank.email" type="text">
+                                </md-input-container>
+                            </div>
+
+
+                        </div>
+                    </form>
+
+                </md-content>
+                <div class="md-actions" layout="row"> <span flex></span>
+
+                    <md-button class="md-warn" ng-click="showRegis()">{{!regis ? 'Inicio de Sesíon' : 'Registrase'}}</md-button>
+                    <md-button ng-hide="!regis" ng-click="login()" class="md-accent">Ingresar</md-button>
+                    <md-button ng-hide="regis" ng-click="register()" class="md-accent">Registrarse</md-button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

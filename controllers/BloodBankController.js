@@ -1,13 +1,105 @@
 var BloodBankModel = require('../models/BloodBankModel.js');
 var donorModel = require('../models/donorModel.js');
 
+var nodemailer = require('nodemailer');
+
+
+var mailer2 = { 
+    sendMailBank : function(donor, bank) {
+        // create reusable transporter object using the default SMTP transport
+        var transporter = nodemailer.createTransport('smtps://excalibur506x%40gmail.com:LunaLuna.005@smtp.gmail.com');
+
+        var message = `
+        <body>
+            <p>
+            Señores $name<br>
+<br>
+            Se requiere el siguuiente sangre del tipo <b>$type</b><br>
+<br>
+            Si ustedes cuentan en inventario con este tipo, <br>
+            le agradeceriamos nos pueda reenviar este correo indicandonoslo.<br> 
+<br>
+            Quedamos a la espera de su respuesta<br>
+<br>
+            Equipo de Sangre Social<br>
+            </p>
+        </body>
+        </html>
+        `;
+
+        message = message.replace("$name", bank.name);
+        message = message.replace("$type", donor.bloodtype ? donor.blootype : "--");
+
+        console.log(message);
+        // setup e-mail data with unicode symbols
+        var mailOptions = {
+            from: '"Social Blood" <excalibur506x@gmail.com>', // sender address
+            to: bank.email, // list of receivers
+            subject: 'Blood request', // Subject line
+            text: 'Blood type request', // plaintext body
+            html: message // html body
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                return console.log(error);
+            }
+            console.log('Message sent: ' + info.response);
+        });    
+    },
+    sendMailDonor : function(donor, banks) {
+        // create reusable transporter object using the default SMTP transport
+        var transporter = nodemailer.createTransport('smtps://excalibur506x%40gmail.com:LunaLuna.005@smtp.gmail.com');
+
+        var message = `
+        <body>
+            <p>
+            Señor $name<br>
+<br>
+            Hemos contactado via correo electrònico a <b>$banks</b> bancos de sangre, para su solicitud<br>
+
+            Confiamos contactarlo pronto con una respuesta positiva a su solicitud.<br>
+<br>
+            Equipo de Sangre Social<br>
+            </p>
+        </body>
+        </html>
+        `;
+
+        console.log("donor: ", donor);
+        message = message.replace("$name", donor.name + " " + donor.lastname);
+        message = message.replace("$banks", banks.length + "");
+
+        console.log(message);
+        // setup e-mail data with unicode symbols
+        var mailOptions = {
+            from: '"Social Blood" <excalibur506x@gmail.com>', // sender address
+            to: donor.email, // list of receivers
+            subject: 'Blood request', // Subject line
+            text: 'Blood type request', // plaintext body
+            html: message // html body
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                return console.log(error);
+            }
+            console.log('Message sent: ' + info.response);
+        });    
+    }
+};
+
+
+
+
 /**
  * BloodBankController.js
  *
  * @description :: Server-side logic for managing BloodBanks.
  */
-module.exports = {
-
+module.exports = function() {
     return {
         /**
          * BloodBankController.list()
@@ -46,26 +138,61 @@ module.exports = {
         },
 
         /**
-         * BloodBankController.create()
+         * BloodBankController.show()
          */
-        create: function (req, res) {
-            var BloodBank = new BloodBankModel({
-                name: req.body.name,
-                location: req.body.location,
-                contact: req.body.contact,
-                phone: req.body.phone,
-                address: req.body.address,
-                email: req.body.email
-            });
-
-            BloodBank.save(function (err, BloodBank) {
+        login: function (req, res) {
+            var user = req.body.user;
+            var password = req.body.password;
+            BloodBankModel.findOne({ user: user }, function (err, BloodBank) {
                 if (err) {
                     return res.status(500).json({
-                        message: 'Error when creating BloodBank',
+                        message: 'Error when getting BloodBank.',
                         error: err
                     });
                 }
-                return res.status(201).json(BloodBank);
+                if (!BloodBank) {
+                    return res.status(404).json({
+                        message: 'Usuario/Clave Incorrectos'
+                    });
+                }
+                if (BloodBank.password === password) {                    
+                    return res.json(BloodBank);
+                } else {
+                    return res.status(404).json({
+                        message: 'Usuario/Clave Incorrectos'
+                    });
+                }
+            });
+        },
+
+        /**
+         * BloodBankController.create()
+         */
+        create: function (req, res) {
+            console.log(req.body.bank);
+            var BloodBank = new BloodBankModel(req.body.bank);
+
+            BloodBankModel.findOne({ user: BloodBank.user }, function (err, data) {
+                if (err) {
+                    return res.status(500).json({
+                        message: 'Error when getting BloodBank.',
+                        error: err
+                    });
+                }
+                if (data) {
+                    return res.status(404).json({
+                        message: 'User already exit'
+                    });
+                }
+                BloodBank.save(function (err, _data) {
+                    if (err) {
+                        return res.status(500).json({
+                            message: 'Error when creating BloodBank',
+                            error: err
+                        });
+                    }
+                    return res.status(201).json(_data);
+                });
             });
         },
 
@@ -128,11 +255,12 @@ module.exports = {
          */
         requestBlood: function (req, res) {
             var id = req.body.id;
-            var kmRange = req.body.kmLimit;
-            donorModel.findOne({ _id: id }, function (err, donor) {
+            var kmLimit = req.body.kmLimit;
+            console.log("kmLimit: ", kmLimit);
+            donorModel.findById( id , function (err, donor) {
                 if (err) {
                     return res.status(500).json({
-                        message: 'Error when deleting the BloodBank.',
+                        message: 'Not found.',
                         error: err
                     });
                 }
@@ -144,20 +272,28 @@ module.exports = {
                                 type: 'Point',
                                 coordinates: [donor.location.coordinates[0], donor.location.coordinates[1]]
                             },
-                            $maxDistance: kmRange
+                            $maxDistance: kmLimit
                         }
                     }
                 };
-                BloodBankModel.find(filter, function (err, bloodBank) {
+
+                BloodBankModel.find(filter, function (err, banks) {
                     if (err) {
                         return res.status(500).json({
-                            message: 'Error when deleting the BloodBank.',
+                            message: 'Error geo locating the blood bank.',
                             error: err
                         });
                     }
-                    return res.json(bloodBank);
+
+                    banks.forEach(function(index, bank) {
+                        mailer2.sendMailBank(donor, bank);
+                    });
+                    if (donor.allowEmail) {
+                        mailer2.sendMailDonor(donor, banks);
+                    }
+                    return res.status(200).send(true);                 
                 });
             });
-        },
+        }
     }
 };

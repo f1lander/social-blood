@@ -1,0 +1,24 @@
+<div class="donor-main" layout="column">
+    <div flex="30">
+       <div layout="row" layout-align="center center">
+            <div style="color:white;">
+              <h1 class="md-display-3">Donante</h1>
+            </div>
+         
+        </div>
+    </div>
+    <div flex="70" layout="column" layout-align="center center">
+        
+        <div layout="row" layout-xs="column" layout-align="center center">
+            <div>                
+                <md-button ui-sref="donor-register" class="md-raised md-primary md-button-large">Registrarse</md-button>
+            </div>
+            <div>
+                <md-button ui-sref="donor-login" class="md-raised md-warn md-button-large">Iniciar Sesión</md-button>
+            </div>
+            <div>
+                <md-button ng-show="donorLogged" ng-click="requestPinta()" class="md-raised md-warn md-button-large">Solicitar Pinta</md-button>
+            </div>
+        </div>
+    </div>
+</div>

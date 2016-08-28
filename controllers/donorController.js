@@ -46,33 +46,62 @@ module.exports = {
     },
 
     /**
-     * donorController.create()
+     * BloodBankController.show()
      */
-    create: function(req, res) {
-        /**
-			name : req.body.name,
-			lastname : req.body.lastname,
-			location : req.body.location,
-			bloodtype : req.body.bloodtype,
-            address =  req.body.address ? req.body.address : donor.address;
-            age =  req.body.age ? req.body.age : donor.age;
-            weight =  req.body.weight ? req.body.weight : donor.weight;
-            donor.gender =  req.body.gender ? req.body.gender : donor.gender;
-        } */
-        console.log(req.body.donor);
-        var donor = new donorModel(req.body.donor);
-        
-        //console.log(donor);
-
-        donor.save(function(err, donor){
-            if(err) {
-                console.log(err);
+    login: function (req, res) {
+        var email = req.body.email;
+        var password = req.body.password;
+        console.log("login", email, password);
+        donorModel.findOne({ email: email }, function (err, donor) {
+            if (err) {
                 return res.status(500).json({
-                    message: 'Error saving donor',
+                    message: 'Error when getting Donor.',
                     error: err
                 });
             }
-            return res.json(donor);
+            if (!donor) {
+                return res.status(404).json({
+                    message: 'Donante/Clave Incorrectos'
+                });
+            }
+            if (donor.password === password) {                    
+                return res.json(donor);
+            } else {
+                return res.status(404).json({
+                    message: 'Donante/Clave Incorrectos'
+                });
+            }
+        });
+    },
+
+    /**
+     * donorController.create()
+     */
+    create: function(req, res) {        
+       var donor = new donorModel(req.body.donor);
+    
+        //console.log(donor);
+        donorModel.findOne({email: donor.email}, function(err, data){
+            if(err) {
+                return res.status(500).json( {
+                    message: 'Error getting donor.'
+                });
+            }
+            if(data) {
+                return res.json(404, {
+                    message: 'Donante ya tiene registrado ese correo'
+                });
+            }
+            donor.save(function(err, donor){
+                if(err) {
+                    console.log(err);
+                    return res.status(500).json({
+                        message: 'Error saving donor',
+                        error: err
+                    });
+                }
+                return res.json(donor);
+            });
         });
     },
 

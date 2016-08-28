@@ -6,9 +6,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var donorRoutes = require('./routes/donors');
+var bankRoutes = require('./routes/BloodBanks');
 
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/donorDb');
+mongoose.connect('mongodb://excalibur506:luna.5@ds039155.mlab.com:39155/social-blood-db');
 var app = express();
 
 // view engine setup
@@ -24,6 +25,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/donors', donorRoutes);
+app.use('/api/banks', bankRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
