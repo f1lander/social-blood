@@ -3,14 +3,23 @@
     <div layout="column" class="relative" layout-fill role="main">
 
         <md-toolbar ng-show="!showSearch">
+
             <div class="md-toolbar-tools">
-                <md-button class="md-icon-button" ng-click="toggleLeft('left')" hide-gt-md aria-label="Menu">
-                    <ng-md-icon style="fill: white" icon="menu"></ng-md-icon>
-                </md-button>
-                <ng-md-icon style="fill: black" icon="search"></ng-md-icon>
+                <div class="logo-nav-holder">
+                    <div layout="row" layout-align="left center">
+                        <div> <img class="logo-nav-item" style="width:60px;height:60px;" src='https://www.blue-infotainments.com/wp-content/uploads/2014/08/20120910142240-donate-blood-300x300.png'
+                            /></div>
+                        <div style="color:white">Social Blood</div>
+                    </div>
+                </div>
+                <br/>
+
+                <ng-md-icon style="fill: white" icon="search">
+
+                </ng-md-icon>
                 <md-input-container class="md-block" flex>
                     <label>&nbsp;</label>
-                    <input ng-model="search" placeholder="">
+                    <input ng-model="search" placeholder="Busca por tipo de sangre, ciudad, nombre, etc ...">
                 </md-input-container>
             </div>
 

@@ -26,8 +26,8 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
           var marker = new google.maps.Marker({
             id: Date.now(),
             coords: {
-              latitude: donorsFiltered[i].location[0],
-              longitude: donorsFiltered[i].location[1]
+              latitude: donorsFiltered[i].location.coordinates[1],
+              longitude: donorsFiltered[i].location.coordinates[0]
             }
           });
 
@@ -42,25 +42,24 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
     } else {
       $scope.map.markers = [];
 
-      for (var i = 0; i < $scope.donors.length; i++) {
-        var marker = new google.maps.Marker({
-          id: Date.now(),
-          coords: {
-            latitude: $scope.donors[i].location[0],
-            longitude: $scope.donors[i].location[1]
-          }
-        });
+        for (var i = 0; i < $scope.donors.length; i++) {
+          var marker = new google.maps.Marker({
+            id: Date.now(),
+            coords: {
+              latitude: $scope.donors[i].location.coordinates[1],
+              longitude: $scope.donors[i].location.coordinates[0]
+            }
+          });
 
-        $scope.map.markers.push(marker);
-        bounds.extend(new google.maps.LatLng(marker.coords.latitude, marker.coords.longitude));
-      }
+          $scope.map.markers.push(marker);
+          bounds.extend(new google.maps.LatLng(marker.coords.latitude, marker.coords.longitude));
+        }
 
-      $scope.map2.setCenter(bounds.getCenter());
-      $scope.map2.fitBounds(bounds);
+        $scope.map2.setCenter(bounds.getCenter());
+        $scope.map2.fitBounds(bounds);
 
     }
   });
-
 
   var bounds = new google.maps.LatLngBounds();
   var interval;
@@ -113,6 +112,25 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
     });
   });
 
+  $scope.addDonor = function () {
+    var place = JSON.parse(localStorage.getItem('place'));
+
+    if (place) {
+      $scope.donor.location = [parseFloat(place.lat), parseFloat(place.lng)];
+      $scope.donor.address = place.address;
+      DonorService.addDonor($scope.donor).then(function (data) {
+        if (data.data) {
+          $scope.showSimpleToast('The donor was added');
+          $scope.getDonors();
+          
+        };
+      }, function (error) {
+        $scope.showSimpleToast('An error ocurred ' + error.data.error.message);
+      });
+    } else {
+      $scope.showSimpleToast('Please Select the address');
+    }
+  }
   $scope.getDonors = function () {
     $scope.donors = [];
     DonorService.getDonors().then(function (data) {
@@ -123,14 +141,14 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
             var marker = new google.maps.Marker({
               id: Date.now(),
               coords: {
-                latitude: data.data[i].location[0],
-                longitude: data.data[i].location[1]
+                latitude: data.data[i].location.coordinates[1],
+                longitude: data.data[i].location.coordinates[0]
               },
               cityName: data.data.address
             });
 
             $scope.map.markers.push(marker);
-
+           
             bounds.extend(new google.maps.LatLng(marker.coords.latitude, marker.coords.longitude));
           }
 
@@ -185,6 +203,7 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
 
   $scope.toggleLeft = buildDelayedToggler('left');
   $scope.toggleRight = buildToggler('right');
+  
   $scope.isOpenRight = function () {
     return $mdSidenav('right').isOpen();
   };
@@ -229,8 +248,9 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
 
 });
 
-app.controller('DonorController', function ($scope, $mdDialog, $mdToast, DonorService) {
+app.controller('DonorController', function ($scope, $mdDialog, $mdToast, DonorService, $state) {
 
+  $scope.donorLogged = localStorage.getItem('donor') ? true: false;
   $scope.genders = ['F', 'M'];
   $scope.bloodTypes = ['O-', 'O+', 'A+', 'A-', 'B-', 'B+', 'AB-', 'AB+'];
 
@@ -305,21 +325,36 @@ app.controller('DonorController', function ($scope, $mdDialog, $mdToast, DonorSe
     });
   };
 
-  //DialogController ---------------------------------------------
-  function DialogController($scope, $mdDialog) {
 
-    $scope.donor = {};
-    $scope.hide = function () {
-      $mdDialog.hide();
-    };
-    $scope.cancel = function () {
-      $mdDialog.cancel();
-    };
-    $scope.answer = function (donor) {
-      $mdDialog.hide(donor);
-    };
+  $scope.requestPinta = function () {
+    var _id = localStorage.getItem('donor');
+    DonorService.requestBlood(_id).then(function (data) {
+      if (data.data) {
+        $scope.showSimpleToast('Se ha enviado un correo a los bancos de sangre mas cercanos a tu ubicacion');
+      
+        $scope.donorLogged = true;
+      }
+    }, function (err) {
+      console.log(err);
+        $scope.donorLogged = false;
+      $scope.showSimpleToast('Ocurrio un error al tratar de solicitar una alerta de pinta');
+    });
   };
-  //DialogController ---------------------------------------------
+
+  $scope.login = function (credentials) {
+    DonorService.loginDonor(credentials).then(function (data) {
+      if (data.data) {
+        $scope.showSimpleToast('Ha iniciado sesion ' + data.data.name);
+        localStorage.removeItem('donor');
+        localStorage.setItem('donor',data.data._id);        
+        $scope.donorLogged = true;
+        $state.go('donor-main');
+      }
+    }, function (err) {
+      console.log(err);
+      $scope.showSimpleToast('Ocurrio un error al tratar de iniciar sesión');
+    });
+  };
 
   //Adding a new donor function ---------------------------------------------
   $scope.addDonor = function (donor) {
@@ -409,8 +444,8 @@ app.controller('BankController', function ($scope, $state, DonorService, $mdToas
   }
   $scope.login = function () {
     var credentials = {
-      user:$scope.bank.user,
-      pass:$scope.bank.pass
+      user: $scope.bank.user,
+      pass: $scope.bank.pass
     };
 
     DonorService.login(credentials).then(function (data) {
