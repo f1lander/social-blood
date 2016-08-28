@@ -37,4 +37,11 @@ router.delete('/:id', function(req, res) {
     donorController.remove(req, res);
 });
 
+/*
+ * DELETE
+ */
+router.post('/login', function(req, res) {
+    donorController.login(req, res);
+});
+
 module.exports = router;
