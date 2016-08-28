@@ -15,6 +15,16 @@
                     <form name="userForm">
 
                         <div layout-gt-xs="colum">
+                             <div layout-gt-xs="row">
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Usuario</label>
+                                    <input ng-model="donor.email" type="email">
+                                </md-input-container>
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Contraseña</label>
+                                    <input ng-model="donor.password" type="password">
+                                </md-input-container>
+                            </div>
                             <div layout-gt-xs="row">
                                 <md-input-container class="md-block" flex-gt-xs>
                                     <label>Nombre</label>

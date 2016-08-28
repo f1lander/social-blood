@@ -115,20 +115,20 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
   $scope.addDonor = function () {
     var place = JSON.parse(localStorage.getItem('place'));
 
-    if (place) {
+    if (place && $scope.donor.age && $scope.donor.weight && $scope.donor.gender && $scope.donor.bloodType) {
       $scope.donor.location = [parseFloat(place.lat), parseFloat(place.lng)];
       $scope.donor.address = place.address;
       DonorService.addDonor($scope.donor).then(function (data) {
         if (data.data) {
-          $scope.showSimpleToast('The donor was added');
+          $scope.showSimpleToast('Se ha agregado como donante');
           $scope.getDonors();
           
         };
       }, function (error) {
-        $scope.showSimpleToast('An error ocurred ' + error.data.error.message);
+        $scope.showSimpleToast('Ha ocurrido un error');
       });
     } else {
-      $scope.showSimpleToast('Please Select the address');
+      $scope.showSimpleToast('Porfavor llene todo los campos');
     }
   }
   $scope.getDonors = function () {
@@ -368,7 +368,7 @@ app.controller('DonorController', function ($scope, $mdDialog, $mdToast, DonorSe
           $scope.showSimpleToast('Te has registrado como donante');
         };
       }, function (error) {
-        $scope.showSimpleToast('An error ocurred ' + error.data.error.message);
+        $scope.showSimpleToast('Ha ocurrido un error');
       });
     } else {
       $scope.showSimpleToast('Seleccione una ubicacion, aproximada');
