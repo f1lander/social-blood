@@ -1,0 +1,46 @@
+<div ng-init="initialize()" class="donor-main" layout="column">
+
+    <div flex="100" layout="column" layout-align="center center">
+
+        <div layout="row" layout-xs="column" layout-align="center center">
+            <div>
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <h2>Iniciar Sesión</h2>
+                        <span flex></span>
+
+                    </div>
+                </md-toolbar>
+                <md-content class="md-padding">
+                    <form name="userForm">
+
+                        <div layout-gt-xs="colum">
+                            <div layout="row">
+                                <md-input-container class="md-block" >
+                                    <label>Usuario</label>
+                                    <input ng-model="credentials.user" placeholder="Jose ...">
+                                </md-input-container>
+                             
+                            </div>
+                            <div layout="row">
+                                <md-input-container class="md-block" >
+                                    <label>Contraseña</label>
+                                    <input ng-model="credentials.pass" type="password" >
+                                </md-input-container>
+                            
+                            </div>
+                        </div>
+
+    
+                    </form>
+                </md-content>
+                <div class="md-actions" layout="row"> <span flex></span>
+
+                    <md-button class="md-warn" ui-sref="donor-main">Volver</md-button>
+                    <md-button ng-click="login(credentials)" class="md-accent">Ingresar</md-button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

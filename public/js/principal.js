@@ -231,6 +231,7 @@ app.controller('PrincipalCtrl', function ($scope, $state, uiGmapIsReady, $interv
 
 app.controller('DonorController', function ($scope, $mdDialog, $mdToast, DonorService) {
 
+  $scope.donorLogged = false;
   $scope.genders = ['F', 'M'];
   $scope.bloodTypes = ['O-', 'O+', 'A+', 'A-', 'B-', 'B+', 'AB-', 'AB+'];
 
@@ -305,21 +306,36 @@ app.controller('DonorController', function ($scope, $mdDialog, $mdToast, DonorSe
     });
   };
 
-  //DialogController ---------------------------------------------
-  function DialogController($scope, $mdDialog) {
 
-    $scope.donor = {};
-    $scope.hide = function () {
-      $mdDialog.hide();
-    };
-    $scope.cancel = function () {
-      $mdDialog.cancel();
-    };
-    $scope.answer = function (donor) {
-      $mdDialog.hide(donor);
-    };
+  $scope.requestPinta = function () {
+    var _id = localStorage.getItem('donor');
+    DonorService.requestBlood(_id).then(function (data) {
+      if (data.data) {
+        $scope.showSimpleToast('Se ha enviado un correo a los bancos de sangre mas cercanos a tu ubicacion');
+        localStorage.removeItem('donor');
+        localStorage.setItem('donor', JSON.stringify(data.data._id));
+        $scope.donorLogged = true;
+      }
+    }, function (err) {
+      console.log(err);
+        $scope.donorLogged = false;
+      $scope.showSimpleToast('Ocurrio un error al tratar de solicitar una alerta de pinta');
+    });
   };
-  //DialogController ---------------------------------------------
+
+  $scope.login = function (credentials) {
+    DonorService.loginDonor(credentials).then(function (data) {
+      if (data.data) {
+        $scope.showSimpleToast('Ha iniciado sesion ' + data.data.user);
+        localStorage.removeItem('donor');
+        localStorage.setItem('donor', JSON.stringify(data.data._id));
+        $scope.donorLogged = true;
+      }
+    }, function (err) {
+      console.log(err);
+      $scope.showSimpleToast('Ocurrio un error al tratar de iniciar sesión');
+    });
+  };
 
   //Adding a new donor function ---------------------------------------------
   $scope.addDonor = function (donor) {
@@ -409,8 +425,8 @@ app.controller('BankController', function ($scope, $state, DonorService, $mdToas
   }
   $scope.login = function () {
     var credentials = {
-      user:$scope.bank.user,
-      pass:$scope.bank.pass
+      user: $scope.bank.user,
+      pass: $scope.bank.pass
     };
 
     DonorService.login(credentials).then(function (data) {
